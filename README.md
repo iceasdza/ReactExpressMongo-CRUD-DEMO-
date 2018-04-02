@@ -1,9 +1,10 @@
 ﻿# ReactExpressMongo
-#API
+ 
+﻿#API
 npm install
 run api server
 nodemon server.js
 
-#Web 
+﻿#Web 
 npm install
 npm start

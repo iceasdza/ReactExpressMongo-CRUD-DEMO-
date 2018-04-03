@@ -5,11 +5,14 @@ class App extends Component {
 
   state = {
     todos:[],
-    activity:''
+    activity:'',
+    fileLength:0,
+    uploadPath:""
   }
 
   async getData(){
     const data = await axios.get('http://localhost:3030/api/todo')
+    console.log(data)
     this.setState({todos:data.data})
     console.log(this.state.todos)
   }
@@ -42,7 +45,6 @@ class App extends Component {
 
   async onSubmitHandle(event){
     event.preventDefault()
-
     await axios.post('http://localhost:3030/api/todo',{
       activity : this.state.activity
     })
@@ -53,7 +55,35 @@ class App extends Component {
     this.getData()
 
   }
+  CountFile(e){
+    const length = e.target.files.length;
+    this.setState({fileLength:length})
+    if(length===1){
+      this.setState({uploadPath:"http://localhost:3030/uploadSingleFile"})
+      console.log(this.state.uploadPath)
+    }else{
+      this.setState({uploadPath:"http://localhost:3030/uploadMultipleFile"})
+      console.log(this.state.uploadPath)
+    }
 
+  }
+
+async onUploadFile(e){
+   e.preventDefault()
+    if(this.state.fileLength!==1){
+     await   axios.post('http://localhost:3030/uploadMultipleFile')
+    }else{
+     await  axios.post('http://localhost:3030/uploadSingleFile')
+    }
+  }
+
+  showFileCount=()=>{
+    return this.state.fileLength
+  }
+  showPath=()=>{
+
+    return this.state.uploadPath.toString();
+  }
 
   render() {
 
@@ -61,9 +91,15 @@ class App extends Component {
       <div>
       <form onSubmit={this.onSubmitHandle.bind(this)}>
       <input type="text" value={this.state.activity} onChange={this.onChangeHadle.bind(this)}/>
-      <button>Buttons</button>
+      <button>ADD</button>
       </form>
+      <form method='post' encType="multipart/form-data" action={this.showPath()}>
+        <input type="file" name="sampleFile" multiple onChange={this.CountFile.bind(this)}/>
+        <input type="submit"/>
+    </form>  
       {this.showData()}
+      File quantity : {this.showFileCount()}<br/>
+      File upload Path : {this.showPath()}
       </div>
     );
   }
